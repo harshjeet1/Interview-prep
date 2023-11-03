@@ -1,0 +1,116 @@
+Types of reports:
+Dashboard--High level matrics displayed on single page.(help answer questions such as "How are we doing?" or "Are we there yet?")
+Analytical--discover answers to a broad array of questions by interacting with the report and its visuals. ("Why did that happen?" or "What might happen next?")
+Operational--monitor current or real-time data, make decisions, and act on those decisions
+Educational--consumer is unfamiliar with the data or context.
+--Commonly, executives work with dashboards, analysts work with analytical reports, and information workers work with operational reports.
+--------------------------------------------------------------------------------------------------------
+Iterator Func: evaluate a given expression for each row. eg sumx, countx  (this func has x in the suffix)
+--------------------------------------------------------------------------------------------------------
+Pivoting is a fancy way to describe the process of turning distinct row values into columns ("pivoting") or turning columns into rows ("unpivoting")
+--------------------------------------------------------------------------------------------------------
+Fact: Data (foreign key)--provide descriptive attributes about each dimension in your model.(many)
+Dim:Lookup(Primary Key)--Contains measurable values or materics about the business. (one)
+--------------------------------------------------------------------------------------------------------
+NOTE: Varaible cannot be modified after it's been defined.
+NOTE: For large dataset using countrows & values may put less strain on the DAX engines than Distinct count. 
+distinct returns scalar result, while values return tabular result
+--------------------------------------------------------------------------------------------------------
+Values Function: When used with Column Name it returns unique values, if a table name is  supplied it returns the entire table pulus a blank row.
+--------------------------------------------------------------------------------------------------------
+Scalar Function: Reterns single agg value rather than col or tbl (eg: agg, conversion, rounding, and logical func)
+--------------------------------------------------------------------------------------------------------
+Evaluation Order: Process by which DAX  evaluates the parameters in a function
+. Individual functions typically evaluate from left-to-right, starting with the first parameter (followed by the second, third, etc.)
+. Nested functions evaluate from the inside-out, starting with the innermost function and working outward from there
+--------------------------------------------------------------------------------------------------------
+DAX has two internal engines which work together to compress & encode raw data and evalute DAX queries.
+1. Formula Engine: Interprets & evaluates DAX.
+2. Storage Engine: Compresses & encodes data.
+
+Working 
+DAX=>Formula Engine(Recevies, interprets and executes all DAX requests)
+=>Storage Engine=> Formula Engine
+
+Types of Storage Engine:(both creates datacaches and send them to the formula engine for DAX evaluation)
+1. DirectQuery: used for direct connections to external sources.
+2. VERTIPAQ: used for in-memory storeage
+
+VERTIPAQ: It uses a columar data structure, which stores data as individual col to quickly & efficiently evaluate DAX queries.
+eg: we will look at the data in the form of Rows*Col or in full table, But vertipaq will store it in the individual Rows like 
+
+Compression and Encoding: 
+It reduces the amt of memory needed to evaluate a DAX query.
+Methods used:
+1. Value Encoding: Mathematical process used to reduce the number of bits needed to store numerical values.(Only works for int and currency values not for string and Float)
+2. Hash Encoding(Dict Encoding): Identifies the dist string values and creates a new tbl with indexes(Working: builts a dict of dist itmes in a col, assigns a unique index to each item and stores the data using index rather than full text string)
+3. Run Length Encoding: Reduces the size of a dataset by identifying repeated values found in adjacent rows.
+-------------------------------------------------------------------------------------------------------
+GROUPING is the process of creating logical categories with text data. 
+Uses: 
+Group 2 or more categories together
+
+BINNING is the process of creating logical ranges for numerical data.
+Note: Bins can be created for calculated columns but not for measures.
+Uses:
+Creating logical ranges of numeric data.
+--------------------------------------------------------------------------------------------------------
+Query folding is the ability for Power Query to generate a single query statement to
+retrieve and transform source data to improve the efficiency of the Power Query engines
+
+Sources that support Query Folding:
+· Relational Databases
+· Odata (SharePoint lists)
+. Microsoft Exchange
+. Azure Active Directory
+
+Sources that don't support Query Folding:
+· Flat files (csv, xlsx, etc.)
+· Azure Blob storage
+· Web page data
+--------------------------------------------------------------------------------------------------------
+Dashboard:
+The primary goal of a dashboard is to interpret the story as quickly as possible. 
+User interactions are limited by insights that are highly curated toward the audience. 
+Report visuals are focused, self-explanatory, and clearly labeled. 
+A dashboard directly communicates the meaning behind the data to minimize misinterpretation or confusion
+--------------------------------------------------------------------------------------------------------
+Filtering can occur at five different levels of a Microsoft Power BI report:
+Dataset (RLS)
+Report
+Page
+Visual
+Measure
+--------------------------------------------------------------------------------------------------------
+Data Type in BI: int, float, currency, datetime, boolean, string
+--------------------------------------------------------------------------------------------------------
+Hierarchy of Report=> 
+Report=>Pages=>Object(visuals and elements)
+--------------------------------------------------------------------------------------------------------
+---Tips to help you produce successful report designs include:
+
+Use either filters or slicers. Avoid using both filter techniques because it can create confusion.
+In the Filters pane, consider locking or hiding visual-level filters to avoid confusing report consumers. (Often, report consumer shouldn't modify or see visual-level filters.)
+Create a bookmark to reset all slicers to default values. Then, add a button to the page to invoke the bookmark. For example, the button could be captioned as Reset slicers.
+When a requirement is in place to lay out many slicers, consider creating a page that is dedicated to showing all slicers. For example, the page could be named Slicers. Sync the slicers to other pages and then set the slicers as hidden on those pages. This design technique will require that report consumers should always go to the Slicers page to modify slicer settings. To help them, you can add a page navigation button at a consistent location on each page so that they can easily return to the Slicers page.
+Consider using other visuals in place of slicers. Be sure to teach report consumers how to cross filter by using these visuals.
+--------------------------------------------------------------------------------------------------------
+DATESYTD: reset every year
+--------------------------------------------------------------------------------------------------------
+Sales YTD :=
+CALCULATE (
+    [Sales Amount],
+    DATESYTD( 'Date'[Date] )
+)
+--------------------------------------------------------------------------------------------------------
+--if If the goal is to sum values over more than one year, then DATESYTD is no longer useful. In that case, the calculation requires an explicit filter in plain DAX
+
+Sales RT :=
+VAR MaxDate = MAX ( 'Date'[Date] ) -- Saves the last visible date
+RETURN
+    CALCULATE (
+        [Sales Amount],           -- Computes sales amount
+        'Date'[Date] <= MaxDate,  -- Where date is before the last visible date
+        ALL ( Date )              -- Removes any other filters from Date  ALL IS NOT REQUIRED IF THE CALANDER TABLE IS MARKED AS DATTE TABLE. 
+    )
+--------------------------------------------------------------------------------------------------------
