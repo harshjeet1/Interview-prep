@@ -1,0 +1,86 @@
+Introduction
+
+Our client is a small division of a large Federal Finance Agency that is in charge of administering and enforcing economic and trade sanctions determined by US foreign policy and national security goals.
+
+Background
+The agency’s office uses a number of software application systems to track and manage cases, applications, transactions, and other financial documents. Recently, the division has experienced increased workload due to changes in US foreign policy as well as high staff turnover. The change in US foreign policy and high staff turnover has led to a substantial backlog of unprocessed paperwork. 
+
+In addition, the organization’s business units are extremely siloed; each section of the organization has its own separate software application and database which creates redundant data in the system. The current systems used at this office are a mixture of in-house solutions and legacy systems developed by other contractors years ago. The organization wants to consolidate its systems to increase collaboration, streamline operations, and improve efficiency. 
+
+Problem statement
+An enterprise architecture plan is an overall structural strategy for all IT systems in an organization. This plan combines the business needs of key stakeholders to help an organization achieve its future goals. The officials of this agency have outlined the need for an overall structural strategy for all IT systems within their organization. Deloitte has been hired to assist with the analysis of the current systems and develop an implementation plan for a new, shared enterprise architecture solution spanning across all divisions of the organization.
+
+Key considerations:
+There are seven different internal systems being used by the organization. Each system uses the same development environment and database platform.
+Most of the business units consist of lawyers and ex-military officers, who are experts in their field but not necessarily technology-oriented.
+Many of the business units still work with hard-copies of cases and licenses that they need to process and hand-deliver to other business units for review.
+High employee turnover has left remaining employees stretched very thin, including the IT department, whose time is mostly consumed providing maintenance support to employees using each of the systems.
+Additional goals of the project include adapting to foreign languages, standardizing internal reporting and decreasing throughput time for form processing.
+ 
+Review the case
+Question 1
+Your manager has asked you to develop the new architecture plan by analyzing the current systems and interviewing stakeholders. What aspects of the current system would you want to analyze? How would you gather the information?
+
+Understanding the current system, how data flows in the system. 
+Document the workflows and process related to the current systerms. 
+Identify the opportunity to streamline the bussiness process by identifying the manual workarounds users have adopted. 
+Identify opportunities to implement new technology and automating the tasks. 
+Identifying if training is required to streamline processes.
+Understanding the workload, and primary responsibility of employees.
+Identifying areas when employees spend most of the time.
+Identifying areas to standadise the workflow and need to implement collaborate envoirment like sharepoint.
+Analyze data issues in each database. Determine where data is being recorded twice in between different systems/db.
+
+What factors out of Deloitte’s control will determine the scope of the project?
+Budget, new US foreign policy, and time
+The agency’s availability of resources, documentation of current system and acceptance of change regarding a new system:
+
+After your current state analysis, it has been determined that the client’s biggest pain point is the amount of time it takes to enter data into each system and that this could be improved by creating a unified data architecture to be used across all systems. What steps would you go through to implement this new database? What do each of these steps entail?
+
+Define stakeholder needs and objectives.
+Develop a plan for data migration.
+Implement data governance and define security permission.
+Prepare relevant Training modules.
+Deploy the system in a phased manner.
+Monitor process after deployment.
+
+---#Check Pic#--
+--------------------------------------MedX: The Smart Pill Bottle--------------------------------------------
+Deloitte has been engaged to develop a revised customer experience journey to understand opportunities for expansion. Several priorities have already been shared by the CTO, including:
+
+Upgrading the app with new features outside of push notifications 
+Engaging with additional stakeholders who would benefit from this data
+Improving the customer support services, which is currently limited to a 1-800 support line
+Customer reviews indicate that the app crashes frequently and has limited features
+Site was prone to identity theft a few years ago
+MedX is open to the possibility of redesigning the webpage/app for the smart pill bottle to improve customer support functionality
+MedX is looking to reach additional markets in Asia and South America
+Low conversion rates: Only 15% of users who visit the site actually buy products
+ 
+Patients, doctors, and employees have been using the legacy MedX SmartPill Bottle system for the past several years. MedX is interested in rolling out a new patient portal but is concerned that a short timeline to get them acquainted with the new system may be a risk. MedX also wants to prepare doctors and employees for the new patient portal.
+
+Q.1 What would your approach be to ensure that MedX employees and doctors are comfortable using the new system?
+
+Identify specific needs and concerns of emp & doc regarding the new sys.
+Understand current workflows of emp and doc.
+Implement new systerms considering feedback recieved from the emp and doc on the new sys. Implement new sys in phased manner in small group and collect feedback.
+Build a user frendly Interface.
+Developed a tailored training program for emp and doc
+Conduct training session, and provide training materials.
+Offer support channel for people and explain advantages of new systerm.
+
+Q2. How would you suggest preparing patients for changes related to the new customer portal?
+
+Create an online FAQ portal for benefit recipients to address questions they may have about the change.
+Post an informational message on the current portal for patients, alerting them that a change is coming
+Designate a resource that will be available to answer questions and troubleshoot issues for the end users once the system has gone live.
+
+Q3. How would you outline a five-year strategy for MedX, which includes specific details around how the company can use technology to increase revenues and market share? Please include specific ideas around stakeholder buy-in and implementation.
+
+Develop a clear vision for leveraging technology to drive revenue growth and increase market share.
+Implement technology to streamline operation and enhance customer experiences.
+Enhance app to improve customer engagement beyond push notificaiton.
+Conduct market research for expansion into new market
+Enhance customer support services and address app performance issues.
+Strengthen data security to regain trust following a history of identity theft.
+Identify KPI metrics to track improvement.
