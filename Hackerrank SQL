@@ -21,3 +21,19 @@ where p1.salary < p2.salary
 order by p2.salary
 
 /*p1 has all_sal , p2 has bf_sal*/
+
+Q. Write a query that displays the average number of monthly incidents for each category. (Mode Analytics)
+
+SELECT 
+  tbl.category,
+  AVG(tbl.incident) as avg_incident
+from 
+(
+SELECT 
+  EXTRACT(month from cleaned_date) as month,
+  category,
+  count(incidnt_num) as incident
+FROM tutorial.sf_crime_incidents_cleandate
+GROUP by 1,2)
+tbl
+GROUP BY 1
