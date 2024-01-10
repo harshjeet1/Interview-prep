@@ -182,4 +182,25 @@ SELECT app_id,
       round((100.0 * total_click)/total_impression,2) as ctr
 from cte
 
+Q. Write a query to display the user IDs of those who did not confirm their sign-up on the first day, but confirmed on the second day.
 
+with cte as
+(SELECT 
+    e.email_id,e.user_id, t.signup_action, e.signup_date, t.action_date,
+    extract(day from action_date-signup_date) as date_diff
+FROM emails e
+join texts t on e.email_id = t.email_id 
+ORDER BY 2)
+
+select user_id
+from cte
+where signup_action = 'Confirmed' and date_diff = 1
+
+Q. Cards Issued Difference [JPMorgan Chase SQL Interview Question]
+
+SELECT 
+  card_name, 
+  MAX(issued_amount) - MIN(issued_amount) AS difference
+FROM monthly_cards_issued
+GROUP BY card_name
+ORDER BY difference DESC;
