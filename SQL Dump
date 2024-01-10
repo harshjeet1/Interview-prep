@@ -19,3 +19,167 @@ with cte as (
 select cte.sal 
 from cte
 where sal_rnk <= 3;
+
+/* DataLemur Que */
+--DAY 1
+Q. Assume you're given a table Twitter tweet data, write a query to obtain a histogram of tweets posted per user in 2022. Output the tweet count per user as the bucket and the number of Twitter users who fall into that bucket. In other words, group the users by the number of tweets they posted in 2022 and count the number of users in each group.
+
+with cte as
+(
+SELECT user_id, COUNT(tweet_id) as tweet_per_user
+FROM tweets
+where tweet_date BETWEEN '2022-01-01' AND '2022-12-31'
+GROUP BY 1 )
+select 
+tweet_per_user as tweet_bucket,
+count(user_id) as uer_num
+from cte 
+group by 1
+
+Q. Write a query to find the candidates best suited for an open Data Science job. You want to find candidates who are proficient in Python, Tableau, and PostgreSQL.
+
+SELECT candidate_id
+from candidates
+where skill in ('Python','Tableau','PostgreSQL') 
+GROUP BY 1
+HAVING count(skill) =3
+
+Q. Write a query to return the IDs of the Facebook pages that have zero likes. The output should be sorted in ascending order based on the page IDs.
+
+SELECT distinct p.page_id
+from pages p
+left join page_likes l
+on p.page_id = l.page_id
+where user_id is  null
+order by 1
+
+Q. Write a query to determine which parts have begun the assembly process but are not yet finished.
+SELECT part, assembly_step
+FROM parts_assembly
+where finish_date is null
+
+Q. Write a query that calculates the total viewership for laptops and mobile devices where mobile is defined as the sum of tablet and phone viewership. Output the total viewership for laptops as laptop_reviews and the total viewership for mobile devices as mobile_views.
+
+with cte1 as(
+  select 
+  count(*) as laptop_reviews
+  from viewership  
+  where device_type = 'laptop'
+),
+cte2 as 
+(
+  select 
+  count(*) as mobile_views
+  from viewership  
+  where device_type != 'laptop'
+)
+select laptop_reviews, mobile_views from cte1,cte2
+
+Q. write a query to find the number of days between each user’s first post of the year and last post of the year in the year 2021. Output the user and number of the days between each user's first and last post.
+
+SELECT 
+  user_id,
+  EXTRACT(day FROM (max(post_date) - MIN(post_date))) AS days_between
+FROM posts
+WHERE EXTRACT(year FROM post_date) = '2021'
+GROUP BY user_id
+HAVING count(post_id) > 1;
+
+Q. Write a query to identify the top 2 Power Users who sent the highest number of messages on Microsoft Teams in August 2022. Display the IDs of these 2 users along with the total number of messages they sent. Output the results in descending order based on the count of the messages.
+SELECT 
+  sender_id, count(message_id) as message_count
+from messages
+where EXTRACT(year from sent_date) = 2022
+and EXTRACT(month from sent_date) = 8
+GROUP BY 1
+HAVING count(message_id) >2
+order by 2 desc
+
+Q. Write a query to retrieve the count of companies that have posted duplicate job listings.
+with cte as 
+(SELECT 
+  company_id, count(job_id)
+FROM 
+job_listings
+GROUP BY 1
+HAVING count(job_id) >=2)
+select count(*) as duplicate_companies from cte
+
+Q. Write a query to retrieve the top three cities that have the highest number of completed trade orders listed in descending order. Output the city name and the corresponding number of completed trade orders.
+
+SELECT 
+  u.city, COUNT(T.order_id) AS total_orders
+FROM trades t
+JOIN users u ON t.user_id = u.user_id
+where t.status = 'Completed'
+group by 1
+order by total_orders desc
+limit 3
+--DAY2
+Q. The output should display the month as a numerical value, product ID, and average star rating rounded to two decimal places. Sort the output first by month and then by product ID.
+
+SELECT 
+ extract(month from submit_date) as mth, 
+ product_id as product ,
+ round(AVG(stars),2) as avg_stars
+FROM reviews
+GROUP BY 1,2
+order by 1,2;
+Q. Final Account Balance- Paypal
+with cte as 
+(SELECT 
+  account_id, 
+  case
+    when transaction_type = 'Deposit'  then amount
+    when transaction_type = 'Withdrawal'  then -amount
+    end as balance
+FROM TRANSACTIONS
+group by 1,2
+order by 1)
+select account_id, sum(balance) as final_balance from cte group by 1
+
+Q. Write a query to determine the total number of tax filings made using TurboTax and QuickBooks. Each user can file taxes once a year using only one product.
+/*
+with cte1 as (
+select 
+  count(*) as TurboTax_total
+from filed_taxes
+where product ilike '%TurboTax%'
+),cte2 as 
+(
+select 
+  count(*) as Quickbooks_total
+from filed_taxes
+where product ilike  '%Quickbooks%'
+)
+select * from cte1,cte2
+
+*/
+
+SELECT 
+  SUM(case 
+    WHEN product ilike '%TurboTax%' then 1 else 0 END) as TurboTax_total,
+  SUM( CASE 
+    WHEN product ilike '%Quickbooks%' then 1 else 0 END) as Quickbooks_total
+from filed_taxes
+
+Q. Write a query to calculate the click-through rate (CTR) for the app in 2022 and round the results to 2 decimal places. 
+NOTE:Percentage of click-through rate (CTR) = 100.0 * Number of clicks / Number of impressions
+     To avoid integer division, multiply the CTR by 100.0, not 100.
+
+with cte as 
+(
+SELECT app_id,
+  sum(case 
+          when event_type = 'impression' then 1 else 0 end ) as total_impression,
+  sum(case 
+            when event_type = 'click' then 1 else 0 end) as total_click         
+from events
+where timestamp BETWEEN '2022-01-01' and '2022-12-31'
+group by 1
+)
+SELECT app_id,
+      round((100.0 * total_click)/total_impression,2) as ctr
+from cte
+
+
