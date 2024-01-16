@@ -20,6 +20,19 @@ select cte.sal
 from cte
 where sal_rnk <= 3;
 
+Q)Calculate department having more female count as compared to males  
+
+with cte as(
+select d.department_id, department_name,
+	sum(case when gender = 'Male' then 1 else 0 end) as total_male,
+    sum(case when gender = 'Female' then 1 else 0 end) as total_female
+from employee e
+left join department d
+	on e.department_id = d.department_id 
+GROUP BY e.department_id)
+select department_name from cte WHERE total_female > total_male
+
+
 /* DataLemur Que */
 --DAY 1
 /* Histogram of Tweets [Twitter SQL Interview Question */
@@ -359,4 +372,147 @@ FROM emails
 LEFT JOIN texts
   ON emails.email_id = texts.email_id
   AND texts.signup_action = 'Confirmed';
+
+--Day 7
+/*Fill Missing Client Data [Accenture SQL Interview Question]*/
+Q. Can you write a SQL query that returns the product catalog with the missing data filled in?
+
+WITH cte AS
+(select *, 
+  COUNT(CATEGORY) OVER(ORDER BY product_id) AS cat_order
+from products)
+SELECT  product_id,
+      FIRST_VALUE(category) OVER(PARTITION BY cat_order) AS Category,
+      name
+FROM  CTE
+
+/*Spotify Streaming History [Spotify SQL Interview Question] */
+
+Q. You are given a songs_history table that keeps track of users" listening history on Spotify. The songs_weekly table tracks how
+many times users listened to each song for all days between August 1 and August 7, 2022.
+
+Write a query to show the user ID, song ID, and the number of times the user has played each song as of August 4, 2022. We'll refer to
+the number of song piays as song_plays . The rows with the most song plays should be at the top of the output.
+Assumption:
+
+. The songs_history table holds data that ends on July 31, 2022. Output should include the historical data in this table.
+. There may be a new user in the weekly table who is not present in the history table.
+. A user may listen to a song for the first time, in which case no existing (user_id, song_id) user-song pair exists in the history
+table
+. A user may listen to a specific song multiple times in the same day.
+
+
+WITH CTE AS (
+SELECT user_id,song_id,song_plays 
+from songs_history
+
+UNION ALL
+
+SELECT user_id,song_id,
+  count(listen_time) as play_time
+FROM songs_weekly
+WHERE listen_time < '08/05/2022'
+GROUP BY 1,2
+)
+
+SELECT user_id,song_id,SUM(song_plays) AS song_plays
+FROM CTE 
+GROUP BY 1,2
+ORDER BY 3 DESC
+
+/*Mean, Median, Mode [Microsoft SQL Interview Question]*/
+Q. Problem: You're given a list of numbers representing the number of emails in the inbox of Microsoft Outlook users. Before the Product Management team can start developing features related to bulk-deleting email or achieving inbox zero, they simply want to find the mean, median, and mode for the emails. Display the output of mean, median, and mode (in this order), with the mean rounded to the nearest integer. It should be assumed that there are no ties to the mode.
+
+SELECT round(Avg(email_count)) as mean,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY email_count) as median,
+    Mode() WITHIN GROUP (ORDER BY email_count) as mode
+FROM inbox_stats
+
+/*Supercloud Customer [Microsoft SQL Interview Question]*/
+Q. Write a query that effectively identifies the company ID of such Supercloud customers.
+Customer 1 bought from Analytics, Containers, and Compute categories of Azure, and thus is a Supercloud customer. Customer 2 isn't a Supercloud customer, since they don't buy any container services from Azure.
+
+/*
+with cte as 
+(SELECT c.customer_id,
+COUNT( DISTINCT p.product_category) as unique_category
+FROM customer_contracts c 
+left join products p 
+  on c.product_id = p.product_id
+GROUP BY 1)
+SELECT customer_id
+from cte
+where unique_category >=3
+*/
+
+/*This is a dynamic query which filter based on unique prod cat*/
+
+with cte as 
+(SELECT c.customer_id,
+COUNT( DISTINCT p.product_category) as unique_category
+FROM customer_contracts c 
+left join products p 
+  on c.product_id = p.product_id
+GROUP BY 1)
+SELECT customer_id
+from cte
+where unique_category = (
+  select COUNT(DISTINCT product_category) from products
+)
+ORDER BY 1
+
+/*Odd and Even Measurements [Google SQL Interview Question]*/
+Q.Write a query to calculate the sum of odd-numbered and even-numbered measurements separately for a particular day and display the results in two different columns. Refer to the Example Output below for the desired format.
+Sol1:
+with cte as
+(SELECT 
+  cast(measurement_time as date) as measurement_day,measurement_time,
+  measurement_value
+FROM measurements
+ORDER BY 2),
+cte1 as (
+select 
+  measurement_day,measurement_value,
+  row_number() over(PARTITION BY measurement_day order by measurement_time) as rn
+from cte
+)
+SELECT measurement_day,
+  sum(measurement_value) filter( where rn %2 !=0 ) as odd_sum,
+  sum(measurement_value) filter( where rn %2 =0 ) as even_sum 
+from cte1 
+GROUP BY 1
+
+Sol2:
+WITH ranked_measurements AS (
+  SELECT 
+    CAST(measurement_time AS DATE) AS measurement_day, 
+    measurement_value, 
+    ROW_NUMBER() OVER (
+      PARTITION BY CAST(measurement_time AS DATE) 
+      ORDER BY measurement_time) AS measurement_num 
+  FROM measurements
+) 
+
+SELECT 
+  measurement_day, 
+  SUM(measurement_value) FILTER (WHERE measurement_num % 2 != 0) AS odd_sum, 
+  SUM(measurement_value) FILTER (WHERE measurement_num % 2 = 0) AS even_sum 
+FROM ranked_measurements
+GROUP BY measurement_day;
+
+/*Booking Referral Source [Airbnb SQL Interview Question] */ --not sure on this
+Q. Write the query to find which of the marketing channels is driving first rental bookings for the company. The ask is to find the top marketing channel from the list, and the percentage of first rental bookings that it drives.
+
+with bookingstable as
+(
+select b.booking_id as booking_id, b.user_id,b.booking_date,channel,
+row_number() over(partition by b.user_id order by b.booking_date) as b_count
+from bookings as b
+join booking_attribution as ba on ba.booking_id = b.booking_id
+)
+select channel, 
+round(105.0*count(booking_id)/(select count(booking_id) from bookingstable where b_count = 1),0) as first_booking_pct
+from bookingstable
+where b_count = 1
+group by channel
 
