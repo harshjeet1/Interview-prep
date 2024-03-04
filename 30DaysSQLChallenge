@@ -1,0 +1,33 @@
+Day1 YT:https://www.youtube.com/watch?v=FRzbOb3jdLg&t=82s
+/* Problem Statement:
+- For pairs of brands in the same year (e.g. apple/samsung/2020 and samsung/apple/2020) 
+    - if custom1 = custom3 and custom2 = custom4 : then keep only one pair
+
+- For pairs of brands in the same year 
+    - if custom1 != custom3 OR custom2 != custom4 : then keep both pairs
+
+- For brands that do not have pairs in the same year : keep those rows as well
+*/
+
+with cte as (
+	select *, 
+		case WHEN brand1 < brand2 then concat(brand1,brand2,year) else concat(brand2,brand1,year) end as uid 
+	from brands),
+cte2 as (
+	SELECT *, ROW_NUMBER() over(PARTITION BY uid order by uid) as rn
+    from cte
+)
+select brand1, brand2, year , custom1,custom2,custom3,custom4
+from cte2
+where rn = 1 or custom1 != custom3 or custom2 != custom4
+
+Day3: YT:https://www.youtube.com/watch?v=w67I_aPKygE
+PROBLEM STATEMENT: Write a sql query to return the footer values from input table, meaning all the last non null values from each field as shown in expected output.
+
+
+select *
+from (select car from footer where car is not null order by id desc limit 1) car
+cross join (select length from footer where length is not null order by id desc limit 1) length
+cross join (select width from footer where width is not null order by id desc limit 1) width
+cross join (select height from footer where height is not null order by id desc limit 1) height;
+
