@@ -596,16 +596,41 @@ sum(case
       WHEN call_country != reciever_country then 1 else 0 end) /count(*)*100),1) as international_calls_pct
 from cte
 
-/*Who Made Quota? [Oracle SQL Interview Question]*/
-Q.Write a query that outputs each employee id and whether they hit the quota or not ('yes' or 'no'). Order the results by employee id in ascending order.
+/* Hackerrank => Symmetric Pairs  */ 
+Q.Two pairs (X1, Y1) and (X2, Y2) are said to be symmetric pairs if X1 = Y2 and X2 = Y1.
+Write a query to output all such symmetric pairs in ascending order by the value of X. List the rows such that X1 ≤ Y1.
 
-with cte AS
-(select employee_id, sum(deal_size) as total_deal_size
-from deals
-GROUP BY 1
+/* union is used to apply x<=y */
+select f1.* from Functions f1 
+join Functions f2 on f1.x = f2.y and f2.x = f1.y -- self join to get symetic pairs X1 = Y2 and X2 = Y1
+where f1.x != f1.y -- considering only distinct pairs from tb1, tb2
+and f1.x < f1.y -- to display pairs where x is smaller than y X1 = Y1 ie 1st condition
+
+union
+
+select * from Functions 
+where x = y -- filter only pairs where x = y ie 2nd condition
+group by 1,2 -- to find unique pairs
+having count(1) > 1
+order by 1
+
+/*Hackerrank => Basic Join => Challenges */
+
+Q.Write a query to print the hacker_id, name, and the total number of challenges created by each student. Sort your results by the total number of challenges in descending order. If more than one student created the same number of challenges, then sort the result by hacker_id. If more than one student created the same number of challenges and the count is less than the maximum number of challenges created, then exclude those students from the result.
+
+with cte as
+(select 
+    h.hacker_id, h.name, count(challenge_id) as total_challenge
+from Hackers h
+left join Challenges c on h.hacker_id = c.hacker_id
+group by 1,2
+order by 3 desc)
+select hacker_id, name, total_challenge 
+from cte
+where total_challenge not in(
+    select total_challenge from cte 
+    where total_challenge != (select max(total_challenge) from cte)
+    group by total_challenge
+    having count(*) >1
 )
-SELECT cte.employee_id,
-  case WHEN total_deal_size > s.quota then 'yes' else 'no' end as mode_quota
-FROM cte 
-LEFT JOIN sales_quotas s on cte.employee_id = s.employee_id
-ORDER BY 1
+
