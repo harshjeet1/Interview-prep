@@ -596,6 +596,20 @@ sum(case
       WHEN call_country != reciever_country then 1 else 0 end) /count(*)*100),1) as international_calls_pct
 from cte
 
+/*Who Made Quota? [Oracle SQL Interview Question]*/
+Q.Write a query that outputs each employee id and whether they hit the quota or not ('yes' or 'no'). Order the results by employee id in ascending order.
+
+with cte AS
+(select employee_id, sum(deal_size) as total_deal_size
+from deals
+GROUP BY 1
+)
+SELECT cte.employee_id,
+  case WHEN total_deal_size > s.quota then 'yes' else 'no' end as mode_quota
+FROM cte 
+LEFT JOIN sales_quotas s on cte.employee_id = s.employee_id
+ORDER BY 1
+
 /* Hackerrank => Symmetric Pairs  */ 
 Q.Two pairs (X1, Y1) and (X2, Y2) are said to be symmetric pairs if X1 = Y2 and X2 = Y1.
 Write a query to output all such symmetric pairs in ascending order by the value of X. List the rows such that X1 ≤ Y1.
@@ -633,4 +647,3 @@ where total_challenge not in(
     group by total_challenge
     having count(*) >1
 )
-
