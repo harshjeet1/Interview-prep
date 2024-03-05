@@ -1,0 +1,38 @@
+Using the bank_transactions table, find how many users made at least one transaction each day in the first five days of January 2020.
+
+with cte as
+(select user_id, count(distinct day (created_at)) as num_days
+from bank_transactions
+where created_at between '2020-01-01' and '2020-01-06'
+group by 1)
+select count(distinct user_id) as number_of_users
+from cte where num_days =5
+
+/*Top 5 Turnover Risk*/
+Q.Given two tables, employees and projects, find the five lowest-paid employees who have completed at least three projects.
+Note: We consider projects to be completed when they have an end date, which is the same as saying their End_dt is not NULL.
+
+with cte as
+(select employee_id, salary, rank() over(order by salary) as rnk
+from employees e
+join projects  p on e.id = p.employee_id
+where end_dt is not null
+group by id
+having count(project_id) >= 3)
+select employee_id from cte
+
+/*Average Commute Time*/
+Q.Write a query to get the average commute time (in minutes) for each commuter in New York (NY) and the average commute time (in minutes) across all commuters in New York.
+
+WITH CTE AS
+(SELECT commuter_id,
+    FLOOR(AVG(TIMESTAMPDIFF(MINUTE,start_dt,end_dt))) AS avg_commuter_time	
+    FROM rides
+WHERE city = 'NY'
+GROUP BY 1),
+CTE1 AS(
+    SELECT FLOOR(AVG(TIMESTAMPDIFF(MINUTE,start_dt,end_dt))) AS avg_time
+    FROM rides
+    WHERE city = 'NY'
+)
+SELECT * FROM CTE,CTE1
