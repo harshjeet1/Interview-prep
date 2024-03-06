@@ -47,3 +47,17 @@ SELECT
 FROM transactions t
 LEFT JOIN users u ON t.user_id = u.id
 ORDER BY 1
+
+/*Customer Orders*/
+Q.Write a query to identify customers who placed more than three transactions each in both 2019 and 2020.
+
+with cte as
+(select name,product_id, 
+rank() over(partition by name order by product_id) as rnk
+from transactions t
+left join users u on t.user_id = u.id
+where year(created_at) in ('2019', '2020')
+and product_id > 3
+)
+select distinct name as customer_name from cte where rnk >1 
+
