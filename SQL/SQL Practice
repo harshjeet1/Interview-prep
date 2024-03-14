@@ -145,6 +145,7 @@ where product ilike  '%Quickbooks%'
 select * from cte1,cte2
 
 */
+--using case when
 
 SELECT 
   SUM(case 
@@ -166,7 +167,7 @@ SELECT app_id,
   sum(case 
             when event_type = 'click' then 1 else 0 end) as total_click         
 from events
-where timestamp BETWEEN '2022-01-01' and '2022-12-31'
+where extract( year from timestamp) = 2022
 group by 1
 )
 SELECT app_id,
