@@ -1,0 +1,66 @@
+--Q1.Count the total salary department number-wise where more than 2 employees exist.  
+
+SELECT deptno, sum(sal) As totalsal
+FROM emp
+GROUP BY deptno
+HAVING COUNT(empno) > 2
+
+--Q2.How to retrieve the 3 Minimum salaries?
+/* usnig select */
+SELECT Date, Sales, 
+SUM(Sales) 
+OVER (ORDER BY Date) as CumulativeSales
+FROM daily_sales;
+
+/* usnig CTE  */
+with cte as (
+        select Date, Sales, row_number() over( order by sales) as sal_rnk from emp
+)
+select cte.sal 
+from cte
+where sal_rnk <= 3;
+
+Q)Calculate department having more female count as compared to males  
+
+with cte as(
+select d.department_id, department_name,
+	sum(case when gender = 'Male' then 1 else 0 end) as total_male,
+    sum(case when gender = 'Female' then 1 else 0 end) as total_female
+from employee e
+left join department d
+	on e.department_id = d.department_id 
+GROUP BY e.department_id)
+select department_name from cte WHERE total_female > total_male
+
+Q.Pivot the Occupation column in OCCUPATIONS so that each Name is sorted alphabetically and displayed underneath its corresponding Occupation. The output column headers should be Doctor, Professor, Singer, and Actor, respectively.
+
+Note: Print NULL when there are no more names corresponding to an occupation.
+
+with cte as
+(select 
+    name,occupation, 
+    row_number() over(partition by occupation order by name) as rn
+from occupations)
+select 
+    max(case when occupation = "Doctor" then name end) as Doctor, 
+    max(case when occupation = "Professor" then name end) as Professor, 
+    max(case when occupation = "Singer" then name end) as Singer, 
+    max(case when occupation = "Actor" then name end) as Actor
+from cte
+group by rn
+order by rn
+
+Q.The total score of a hacker is the sum of their maximum scores for all of the challenges. Write a query to print the hacker_id, name, and total score of the hackers ordered by the descending score. If more than one hacker achieved the same total score, then sort the result by ascending hacker_id. Exclude all hackers with a total score of  from your result.
+
+with cte as
+(select 
+    hacker_id, challenge_id, max(score) as max_score
+from submissions s
+where score >0
+group by hacker_id, challenge_id
+)
+select cte.hacker_id, h.name , sum(max_score) as total_score
+from cte
+inner join hackers h on cte.hacker_id = h.hacker_id
+group by cte.hacker_id, h.name
+order by sum(max_score) desc , cte.hacker_id
