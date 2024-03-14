@@ -14,7 +14,7 @@ FROM daily_sales;
 
 /* usnig CTE  */
 with cte as (
-        select Date, Sales, rank_number() over( order by sales) as sal_rnk from emp
+        select Date, Sales, row_number() over( order by sales) as sal_rnk from emp
 )
 select cte.sal 
 from cte
