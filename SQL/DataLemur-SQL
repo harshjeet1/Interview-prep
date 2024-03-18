@@ -621,3 +621,17 @@ SELECT year, product_id,spend as curr_year_spend,
   round(((spend - lag_spend)/lag_spend)*100,2) as yoy_rate
 from cte
 
+/*Median Google Search Frequency [Google SQL Interview Question]*/ link:https://datalemur.com/questions/median-search-freq
+Q.Write a query to report the median of searches made by a user. Round the median to one decimal point.
+eg: By expanding the search_frequency table, we get [1, 1, 2, 2, 3, 3, 3, 4] which has a median of 2.5 searches per user.
+
+with cte as
+(
+SELECT searches, GENERATE_SERIES(1, num_users) --generate series 
+FROM search_frequency
+ORDER BY searches
+)
+SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY searches)
+FROM cte
+
+
