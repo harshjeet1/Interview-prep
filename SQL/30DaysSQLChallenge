@@ -31,3 +31,11 @@ cross join (select length from footer where length is not null order by id desc 
 cross join (select width from footer where width is not null order by id desc limit 1) width
 cross join (select height from footer where height is not null order by id desc limit 1) height;
 
+/*Derive Expected Output*/ link:https://www.youtube.com/watch?v=RjZFC6NVUMc
+O/p: check YT
+Sol:
+SELECT
+	MIN(id) AS Id,
+	MIN(name) AS Name,
+	MIN(location) AS Location
+FROM Q4_data
