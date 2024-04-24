@@ -1,4 +1,4 @@
---DAY 1
+/--DAY 1
 /* Histogram of Tweets [Twitter SQL Interview Question */ link:https://datalemur.com/questions/sql-histogram-tweets
 Q. Assume you're given a table Twitter tweet data, write a query to obtain a histogram of tweets posted per user in 2022. Output the tweet count per user as the bucket and the number of Twitter users who fall into that bucket. In other words, group the users by the number of tweets they posted in 2022 and count the number of users in each group.
 
@@ -12,7 +12,7 @@ SELECT
 tweet_per_user as tweet_bucket,
 COUNT(user_id) as users_num
 from cte 
-GROUP BY 1
+GROUP BY 1J6
 
 /*[LinkedIn SQL Interview Question] */
 Q. Write a query to find the candidates best suited for an open Data Science job. You want to find candidates who are proficient in Python, Tableau, and PostgreSQL.
@@ -634,4 +634,26 @@ ORDER BY searches
 SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY searches)
 FROM cte
 
+--Hard Advertiser Status [Facebook SQL Interview Question]------Link: https://datalemur.com/questions/updated-status
+Q.Write a query to update the payment status of Facebook advertisers based on the information in the daily_pay table. The output should include the user ID and their current payment status, sorted by the user id.
 
+with cte as 
+(select a.user_id, status, d.paid
+from advertiser a 
+left join daily_pay d 
+on a.user_id = d.user_id 
+UNION 
+select d.user_id , status, d.paid
+FROM daily_pay d
+LEFT JOIN advertiser a 
+ON a.user_id = d.user_id
+)
+SELECT user_id, 
+  case 
+    when paid is null then 'CHURN' 
+    WHEN paid is not null and status in ('EXISTING','RESURRECT','NEW') then 'EXISTING'
+    WHEN status = 'CHURN' AND paid is not null THEN 'RESURRECT'  
+    WHEN status is null then 'NEW' 
+    END AS new_status
+from cte 
+ORDER BY user_id
