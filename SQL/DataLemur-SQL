@@ -669,3 +669,19 @@ cross join pizza_toppings p2
 cross join pizza_toppings p3
 where p1.topping_name < p2.topping_name and p2.topping_name < p3.topping_name
 ORDER BY 2 DESC, 1 
+
+Repeated Payments [Stripe SQL Interview Question] --https://datalemur.com/questions/repeated-payments
+Q.Using the transactions table, identify any payments made at the same merchant with the same credit card for the same amount within 10 minutes of each other. Count such repeated payments.
+with cte as 
+(SELECT *, 
+lag(transaction_timestamp) OVER(partition by merchant_id,credit_card_id,amount order by transaction_timestamp) ,
+  (transaction_timestamp - lag(transaction_timestamp) 
+    OVER(partition by merchant_id,credit_card_id,amount order by transaction_timestamp) ) as time_diff
+FROM transactions 
+order by transaction_timestamp
+)
+
+select COUNT(transaction_id) as payment_count 
+from cte 
+WHERE time_diff <= '00:10:00'
+;
