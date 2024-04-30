@@ -13,3 +13,14 @@ select machine_id,
                 THEN a.timestamp else -a.timestamp END)*2,3) as processing_time
 from Activity a
 group by 1
+
+1251. Average Selling Price --https://leetcode.com/problems/average-selling-price/description/?envType=study-plan-v2&envId=top-sql-50
+Write a solution to find the average selling price for each product. average_price should be rounded to 2 decimal places.
+
+Return the result table in any or
+SELECT p.product_id, IFNULL(ROUND(SUM(units * price) / SUM(units),2),0) as average_price
+FROM Prices p
+LEFT JOIN UnitsSold u
+ON p.product_id = u.product_id
+AND u.purchase_date BETWEEN start_date AND end_date
+GROUP BY product_id
