@@ -1,0 +1,58 @@
+LINK:https://techtfq.com/blog/learn-how-to-write-sql-queries-practice-complex-sql-queries
+--Write a SQL Query to fetch all the duplicate records in a table.
+
+with cte as (
+SELECT *, ROW_NUMBER() over(PARTITION BY user_name order by user_id) as rn
+FROM users
+ORDER BY 1)
+select * from cte where rn > 1
+
+--Write a SQL query to fetch the second last record from employee table.
+
+with cte as (
+select *, ROW_NUMBER() over(order by emp_id desc) as  rn 
+from employee)
+select * from cte where rn =2
+
+--Write a SQL query to display only the details of employees who either earn the highest salary or the lowest salary in each department from the employee table.
+
+with cte as (
+select *, max(salary) over(PARTITION BY DEPT_NAME order by SALARY desc) as max_sal,
+	MIN(salary) over(PARTITION BY DEPT_NAME ) as min_sal
+from employee)
+select emp_id, emp_name, dept_name, salary 
+from cte 
+where cte.max_sal = SALARY or cte.min_sal = salary;
+
+--From the doctors table, fetch the details of doctors who work in the same hospital but in different specialty.
+
+SELECT 
+    d1.*
+FROM
+    doctors d1
+        JOIN
+    doctors d2 ON d1.id <> d2.id
+        AND d1.hospital = d2.hospital
+        AND d1.speciality <> d2.speciality;
+
+--From the login_details table, fetch the users who logged in consecutively 3 or more times.
+
+
+SELECT DISTINCT repeated_user FROM (
+SELECT *, CASE 
+				WHEN user_name = lead(user_name) over(ORDER BY login_id) 
+					AND user_name = lead(user_name,2) over(ORDER BY login_id) THEN user_name ELSE NULL 
+                    END AS repeated_user
+FROM login_details) X
+WHERE repeated_user IS NOT NULL
+
+OR using CTE
+
+WITH CTE AS 
+(SELECT *, CASE 
+				WHEN user_name = lead(user_name) over(ORDER BY login_id) 
+					AND user_name = lead(user_name,2) over(ORDER BY login_id) THEN user_name ELSE NULL 
+                    END AS repeated_user
+FROM login_details)
+SELECT DISTINCT repeated_user FROM CTE WHERE repeated_user IS NOT NULL
+
