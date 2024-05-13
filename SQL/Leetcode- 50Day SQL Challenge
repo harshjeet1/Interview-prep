@@ -77,3 +77,48 @@ SELECT visited_on,
     ROUND(AVG(daily_amount) OVER(ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW ),2) AS average_amount
 FROM CTE 
 OFFSET 6 
+
+1164. Product Price at a Given Date --https://leetcode.com/problems/product-price-at-a-given-date/description/?envType=study-plan-v2&envId=top-sql-50
+Q.Write a solution to find the prices of all products on 2019-08-16. Assume the price of all products before any change is 10.
+Return the result table in any order.
+
+with cte as 
+(select *, rank() over(partition by product_id order by change_date desc) as r
+from Products 
+where change_date <= '2019-08-16')
+
+select product_id, new_price as price
+from cte where r = 1
+union 
+
+select product_id , 10 as price
+from products 
+where  product_id not in (select product_id from cte)
+
+1731. The Number of Employees Which Report to Each Employee --https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/description/?envType=study-plan-v2&envId=top-sql-50
+Q.Write a solution to report the ids and the names of all managers, the number of employees who report directly to them, and the average age of the reports rounded to the nearest integer.
+Return the result table ordered by employee_id.
+
+/*
+select
+e1.employee_id,
+e1.name,
+count(e1.employee_id) reports_count,
+round(avg(e2.age)) average_age
+from Employees e1
+join Employees e2
+on e1.employee_id = e2.reports_to
+group by 1,2
+order by e1.employee_id
+*/
+WITH CTE AS (
+SELECT reports_to , COUNT(employee_id) AS reports_count, ROUND(AVG(AGE)) AS average_age
+FROM Employees 
+WHERE reports_to IS NOT NULL
+GROUP BY reports_to)
+
+SELECT CTE.reports_to AS employee_id, e.name, reports_count,average_age
+FROM CTE
+LEFT JOIN Employees e 
+ON CTE.reports_to = e.employee_id 
+ORDER BY e.employee_id 
