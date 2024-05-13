@@ -62,3 +62,18 @@ from cte
 group by 1 
 order by 2 desc 
 limit 1
+
+1321. Restaurant Growth --https://leetcode.com/problems/restaurant-growth/description/?envType=study-plan-v2&envId=top-sql-50
+Q. Compute the moving average of how much the customer paid in a seven days window (i.e., current day + 6 days before). average_amount should be rounded to two decimal places.
+Return the result table ordered by visited_on in ascending order.
+
+WITH CTE AS
+(select visited_on,
+    sum(amount) as daily_amount
+    from Customer
+    group by visited_on)
+SELECT visited_on, 
+    SUM(daily_amount) OVER(ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW ) AS AMOUNT,
+    ROUND(AVG(daily_amount) OVER(ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW ),2) AS average_amount
+FROM CTE 
+OFFSET 6 
