@@ -1,0 +1,21 @@
+Medium-Google:Common Friends Script--link:https://platform.stratascratch.com/coding/10365-common-friends-script?code_type=1
+Q.You are analyzing a social network dataset at Google. Your task is to find mutual friends between two users, Karl and Hans. There is only one user named Karl and one named Hans in the dataset.
+
+The output should contain 'user_id' and 'user_name' columns.
+WITH cte AS (
+    SELECT u.user_id, u.user_name, f.friend_id
+    FROM users u
+    JOIN friends f ON u.user_id = f.user_id
+    WHERE u.user_name IN ('Karl', 'Hans')
+), tb1 as (
+SELECT cte1.friend_id
+FROM cte cte1
+JOIN cte cte2 ON cte1.friend_id = cte2.friend_id
+WHERE cte1.user_name = 'Karl'
+  AND cte2.user_name = 'Hans')
+
+SELECT u.*
+FROM users u
+join tb1 on u.user_id = tb1.friend_id
+
+
