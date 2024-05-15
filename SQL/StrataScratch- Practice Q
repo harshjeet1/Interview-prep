@@ -13,7 +13,15 @@ FROM cte cte1
 JOIN cte cte2 ON cte1.friend_id = cte2.friend_id
 WHERE cte1.user_name = 'Karl'
   AND cte2.user_name = 'Hans')
-
+/*
+-- tb1 can also be written as 
+common_friendid as (
+select friend_id
+from cte 
+group by 1
+having count(*) >1
+)
+*/
 SELECT u.*
 FROM users u
 join tb1 on u.user_id = tb1.friend_id
