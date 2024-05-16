@@ -26,4 +26,23 @@ SELECT u.*
 FROM users u
 join tb1 on u.user_id = tb1.friend_id
 
+Population Density--Deloitte 
+Q. You are working on a data analysis project at Deloitte where you need to analyze a dataset containing information
+about various cities. Your task is to calculate the population density of these cities, rounded to the nearest integer, and identify the cities with the minimum and maximum densities. The output should contain 'city', 'country', 'density'.
 
+with cte as 
+(select city, country,
+    ceil(population/area) as density
+from cities_population
+where area != 0) -- this is used to handle div by 0 error ie anytihing div by 0 is infinity. or case when can be utilized. 
+
+, cte1 as (
+select *, 
+rank() over(order by density desc) as max_densities,
+rank() over(order by density) as min_densities
+from cte)
+
+select city, country, density 
+from cte1 
+where max_densities = 1 
+or min_densities =1 
